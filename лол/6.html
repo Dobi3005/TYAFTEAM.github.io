@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Арифметика в системах счисления | Мир нулей и единиц</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #000000;
+            color: #00ff00;
+            overflow-x: hidden;
+        }
+        
+        /* БОКОВОЕ МЕНЮ */
+        .sidebar {
+            width: 280px;
+            background-color: #000000;
+            color: #00ff00;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #00ff00;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid #00ff00;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            color: #00ff00;
+            margin-top: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .binary-text {
+            font-size: 14px;
+            color: #00aa00;
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+        
+        /* МЕНЮ */
+        .menu {
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+        
+        .menu-link {
+            display: block;
+            padding: 12px 20px;
+            color: #00ff00;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            font-size: 16px;
+            margin: 5px 10px;
+            border: 1px solid #003300;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .menu-link:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-left-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .menu-link.active {
+            background: rgba(0, 255, 0, 0.15);
+            border-left-color: #00ff00;
+            color: #00ff00;
+            font-weight: bold;
+            border: 1px solid #00ff00;
+        }
+        
+        .link-code {
+            color: #00aa00;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        /* ОСНОВНОЕ СОДЕРЖИМОЕ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            max-width: calc(100% - 280px);
+            background: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* ЗАГОЛОВОК СТРАНИЦЫ */
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+        
+        .page-title {
+            font-size: 36px;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #00ff00;
+        }
+        
+        .page-subtitle {
+            color: #00aa00;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        /* КОНТЕНТ */
+        .content-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #00ff00;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #003300;
+            padding-bottom: 10px;
+        }
+        
+        .section-text {
+            color: #00aa00;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .highlight {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        /* ОПЕРАЦИИ */
+        .operations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .operation-card {
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00aa00;
+            padding: 25px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .operation-card:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+        
+        .operation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .operation-icon {
+            font-size: 36px;
+            color: #00ff00;
+            margin-right: 15px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .operation-title {
+            font-size: 22px;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .operation-system {
+            color: #00aa00;
+            font-size: 14px;
+        }
+        
+        /* ВЫЧИСЛЕНИЯ */
+        .calculation-box {
+            background: rgba(0, 40, 0, 0.8);
+            border: 2px solid #00ff00;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .calculation-title {
+            color: #00ff00;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .calculation-step {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border-left: 3px solid #00ff00;
+            font-family: monospace;
+            font-size: 18px;
+        }
+        
+        .carry {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .borrow {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        /* ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР */
+        .trainer-box {
+            background: rgba(0, 30, 0, 0.8);
+            border: 2px solid #00aa00;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .trainer-title {
+            color: #00ff00;
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .problem-display {
+            background: #001100;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-family: monospace;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .input-label {
+            display: block;
+            color: #00aa00;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            background: #001100;
+            border: 1px solid #00aa00;
+            color: #00ff00;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 3px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .feedback.incorrect {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+        
+        /* ТАБЛИЦА СЛОЖЕНИЯ */
+        .addition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .addition-table th {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            padding: 12px;
+            border: 1px solid #003300;
+            text-align: center;
+        }
+        
+        .addition-table td {
+            padding: 12px;
+            border: 1px solid #003300;
+            color: #00aa00;
+            text-align: center;
+            font-family: monospace;
+        }
+        
+        .table-highlight {
+            background: rgba(0, 255, 0, 0.05);
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        /* КНОПКИ */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #003300;
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: transparent;
+            color: #00ff00;
+            padding: 10px 20px;
+            border: 1px solid #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        /* МИГАНИЕ */
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: 2px solid #00ff00;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+            
+            .operations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- БОКОВОЕ МЕНЮ -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div style="font-size: 40px; margin-bottom: 20px; color: #00ff00; text-align: center;">
+                + - × ÷<span class="blink">_</span>
+            </div>
+            <h1>СИСТЕМЫ СЧИСЛЕНИЯ</h1>
+            <div class="binary-text">01000001 01010010 01001001 01010100 01001000 01001101</div>
+            <div style="color: #00aa00; font-size: 14px; margin-top: 10px;">МОДУЛЬ: АРИФМЕТИКА</div>
+        </div>
+        
+        <nav class="menu">
+            <!-- ИСПРАВЛЕННЫЕ ССЫЛКИ -->
+            <a href='10.html' class="menu-link">
+                <span class="link-code">>></span> ГЛАВНАЯ
+            </a>
+            
+            <a href='1.html' class="menu-link">
+                <span class="link-code">>></span> ЧТО ТАКОЕ СС
+            </a>
+            
+            <a href='2.html' class="menu-link">
+                <span class="link-code">>></span> ДВОИЧНАЯ СИСТЕМА
+            </a>
+            
+            <a href='3.html' class="menu-link">
+                <span class="link-code">>></span> 8-НАЯ И 16-НАЯ
+            </a>
+            
+            <a href='4.html' class="menu-link">
+                <span class="link-code">>></span> ДРУГИЕ СИСТЕМЫ
+            </a>
+            
+            <a href='5.html' class="menu-link">
+                <span class="link-code">>></span> ПЕРЕВОД
+            </a>
+            
+            <a href='6.html' class="menu-link active">
+                <span class="link-code">>></span> АРИФМЕТИКА
+            </a>
+            
+            <a href='8.html' class="menu-link">
+                <span class="link-code">>></span> ИСТОРИЯ
+            </a>
+            
+            <!-- ИСПРАВЛЕННАЯ ССЫЛКА -->
+            <a href='9.html' class="menu-link">
+                <span class="link-code">>></span> ПРАКТИКА
+            </a>
+        </nav>
+        
+            
+            <div style="color: #00aa00; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #003300;">
+                <div style="color: #00aa00;">.     CURRENT_MODULE: ARITHMETIC</div>
+                <div style="color: #003300;">.     NEXT: HISTORY</div>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- ОСНОВНОЕ СОДЕРЖИМОЕ -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">
+                >_ АРИФМЕТИКА В РАЗНЫХ СИСТЕМАХ СЧИСЛЕНИЯ
+            </h1>
+            <p class="page-subtitle">
+                [МОДУЛЬ 6] | СЛОЖЕНИЕ, ВЫЧИТАНИЕ, УМНОЖЕНИЕ | ПЕРЕНОСЫ И ЗАЙМЫ | ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР
+            </p>
+        </header>
+        
+        <!-- ВВЕДЕНИЕ -->
+        <div class="content-section">
+            <h2 class="section-title">🧮 ОСНОВЫ АРИФМЕТИКИ</h2>
+            
+            <div class="section-text">
+                Арифметические операции в разных системах счисления выполняются 
+                по тем же правилам, что и в десятичной системе, но с учётом 
+                основания системы. Главные отличия — в правилах переноса и займа.
+            </div>
+            
+            <div class="operations-grid">
+                <div class="operation-card">
+                    <div class="operation-header">
+                        <div class="operation-icon">+</div>
+                        <div>
+                            <div class="operation-title">СЛОЖЕНИЕ</div>
+                            <div class="operation-system">Перенос при сумме ≥ основанию</div>
+                        </div>
+                    </div>
+                    <div class="section-text">
+                        • Складываем поразрядно справа налево<br>
+                        • Если сумма ≥ основанию — пишем остаток, 1 в перенос<br>
+                        • Перенос прибавляем к следующему разряду
+                    </div>
+                </div>
+                
+                <div class="operation-card">
+                    <div class="operation-header">
+                        <div class="operation-icon">-</div>
+                        <div>
+                            <div class="operation-title">ВЫЧИТАНИЕ</div>
+                            <div class="operation-system">Займ при недостатке</div>
+                        </div>
+                    </div>
+                    <div class="section-text">
+                        • Вычитаем поразрядно справа налево<br>
+                        • Если цифра уменьшаемого меньше — занимаем 1 из старшего разряда<br>
+                        • Занимаемая единица = основанию системы
+                    </div>
+                </div>
+                
+                <div class="operation-card">
+                    <div class="operation-header">
+                        <div class="operation-icon">×</div>
+                        <div>
+                            <div class="operation-title">УМНОЖЕНИЕ</div>
+                            <div class="operation-system">Через сложение</div>
+                        </div>
+                    </div>
+                    <div class="section-text">
+                        • Умножаем на каждую цифру множителя<br>
+                        • Сдвигаем частичные произведения<br>
+                        • Складываем все частичные произведения<br>
+                        • Учитываем переносы
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- СЛОЖЕНИЕ В ДВОИЧНОЙ СИСТЕМЕ -->
+        <div class="content-section">
+            <h2 class="section-title">➕ СЛОЖЕНИЕ В ДВОИЧНОЙ СИСТЕМЕ</h2>
+            
+            <div class="calculation-box">
+                <div class="calculation-title">ПРИМЕР: 1011₂ + 0111₂ = ?</div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Правила сложения:</span><br>
+                    0 + 0 = 0 (перенос 0)<br>
+                    0 + 1 = 1 (перенос 0)<br>
+                    1 + 0 = 1 (перенос 0)<br>
+                    1 + 1 = 0 (перенос 1) ← главное правило!
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Выполняем сложение:</span><br>
+                    <pre style="color: #00aa00; font-family: monospace; margin: 10px 0;">
+         1 1 1    <span class="carry">← переносы</span>
+         1 0 1 1₂ (11₁₀)
+       + 0 1 1 1₂ (7₁₀)
+       ----------
+       1 0 0 1 0₂ (18₁₀)
+                    </pre>
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Поразрядное объяснение:</span><br>
+                    • 1 + 1 = 0, перенос 1<br>
+                    • 1 + 1 + 1 = 1, перенос 1 (1+1=0+перенос, потом 0+1=1)<br>
+                    • 0 + 1 + 1 = 0, перенос 1<br>
+                    • 1 + 0 + 1 = 0, перенос 1<br>
+                    • Последний перенос = 1
+                </div>
+            </div>
+        </div>
+        
+        <!-- ВЫЧИТАНИЕ В ДВОИЧНОЙ СИСТЕМЕ -->
+        <div class="content-section">
+            <h2 class="section-title">➖ ВЫЧИТАНИЕ В ДВОИЧНОЙ СИСТЕМЕ</h2>
+            
+            <div class="calculation-box">
+                <div class="calculation-title">ПРИМЕР: 1001₂ - 0110₂ = ?</div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Правила вычитания:</span><br>
+                    0 - 0 = 0 (заём 0)<br>
+                    1 - 0 = 1 (заём 0)<br>
+                    1 - 1 = 0 (заём 0)<br>
+                    0 - 1 = 1 (заём 1) ← занимаем из старшего разряда!
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Выполняем вычитание:</span><br>
+                    <pre style="color: #00aa00; font-family: monospace; margin: 10px 0;">
+         ₁ ₁       <span class="borrow">← заёмы</span>
+         1 0 0 1₂ (9₁₀)
+       - 0 1 1 0₂ (6₁₀)
+       ----------
+         0 0 1 1₂ (3₁₀)
+                    </pre>
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Поразрядное объяснение:</span><br>
+                    • 1 - 0 = 1<br>
+                    • 0 - 1 = ? Занимаем: становится 10₂ (2₁₀), 10 - 1 = 1<br>
+                    • После заёма 0 становится 1, но мы уже заняли, поэтому 1 - 1 = 0<br>
+                    • 1 - 0 = 1 (но мы заняли, поэтому 0 - 0 = 0)
+                </div>
+            </div>
+        </div>
+        
+        <!-- УМНОЖЕНИЕ В ДВОИЧНОЙ СИСТЕМЕ -->
+        <div class="content-section">
+            <h2 class="section-title">✖️ УМНОЖЕНИЕ В ДВОИЧНОЙ СИСТЕМЕ</h2>
+            
+            <div class="calculation-box">
+                <div class="calculation-title">ПРИМЕР: 101₂ × 11₂ = ?</div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Упрощение в двоичной системе:</span><br>
+                    Умножение на 0 = 0<br>
+                    Умножение на 1 = само число (со сдвигом)
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Выполняем умножение:</span><br>
+                    <pre style="color: #00aa00; font-family: monospace; margin: 10px 0;">
+           1 0 1₂ (5₁₀)
+         ×   1 1₂ (3₁₀)
+         ----------
+           1 0 1   <span class="highlight">← 101 × 1</span>
+       + 1 0 1     <span class="highlight">← 101 × 1 (сдвинуто)</span>
+       ----------
+       1 1 1 1₂ (15₁₀)
+                    </pre>
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Проверка в десятичной системе:</span><br>
+                    5₁₀ × 3₁₀ = 15₁₀ = 1111₂ ✓
+                </div>
+            </div>
+        </div>
+        
+        <!-- АРИФМЕТИКА В 16-НОЙ СИСТЕМЕ -->
+        <div class="content-section">
+            <h2 class="section-title">🔢 АРИФМЕТИКА В 16-НОЙ СИСТЕМЕ</h2>
+            
+            <div class="calculation-box">
+                <div class="calculation-title">ПРИМЕР: 2A9₁₆ + 1F6₁₆ = ?</div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Помним:</span> A=10, B=11, C=12, D=13, E=14, F=15
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Выполняем сложение:</span><br>
+                    <pre style="color: #00aa00; font-family: monospace; margin: 10px 0;">
+         1         <span class="carry">← перенос</span>
+         2 A 9₁₆ (681₁₀)
+       + 1 F 6₁₆ (502₁₀)
+       ----------
+         4 9 F₁₆ (1183₁₀)
+                    </pre>
+                </div>
+                
+                <div class="calculation-step">
+                    <span class="highlight">Поразрядное объяснение:</span><br>
+                    • 9 + 6 = 15 = F₁₆ (перенос 0)<br>
+                    • A + F = 10 + 15 = 25<br>
+                      25 ÷ 16 = 1 (остаток 9), пишем 9, перенос 1<br>
+                    • 2 + 1 + 1 = 4
+                </div>
+            </div>
+        </div>
+        
+        <!-- ТАБЛИЦА СЛОЖЕНИЯ В ДВОИЧНОЙ СИСТЕМЕ -->
+        <div class="content-section">
+            <h2 class="section-title">📊 ТАБЛИЦА СЛОЖЕНИЯ ДВОИЧНЫХ ЧИСЕЛ</h2>
+            
+            <table class="addition-table">
+                <thead>
+                    <tr>
+                        <th>+</th>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>Результат</th>
+                        <th>Перенос</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0 + 0 = 0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0 + 1 = 1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1 + 0 = 1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="table-highlight">
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1 + 1 = 0</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="section-text">
+                <span class="highlight">Важно:</span> 1 + 1 = 0 с переносом 1 — это ключевое правило 
+                двоичной арифметики, которое отличает её от десятичной.
+            </div>
+        </div>
+        
+        <!-- ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР -->
+        <div class="content-section">
+            <h2 class="section-title">🎮 ТРЕНАЖЕР ДВОИЧНОЙ АРИФМЕТИКИ</h2>
+            
+            <div class="trainer-box">
+                <div class="trainer-title">РЕШИТЕ ЗАДАЧУ:</div>
+                
+                <div class="problem-display" id="problemDisplay">
+                    1011₂ + 0110₂ = ?
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-label">ВАШ ОТВЕТ (в двоичной системе):</div>
+                    <input type="text" id="answerInput" class="answer-input" placeholder="Введите ответ, например: 10001">
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="checkAnswer()">ПРОВЕРИТЬ</button>
+                    <button class="control-btn" onclick="showSolution()">ПОКАЗАТЬ РЕШЕНИЕ</button>
+                    <button class="control-btn" onclick="newProblem()">НОВАЯ ЗАДАЧА</button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <div id="solution" style="display: none; margin-top: 20px; padding: 15px; background: rgba(0, 255, 0, 0.05); border: 1px solid #003300;">
+                    <div style="color: #00ff00; margin-bottom: 10px;">ПОШАГОВОЕ РЕШЕНИЕ:</div>
+                    <pre style="color: #00aa00; font-family: monospace;">
+         1 1 1    ← переносы
+         1 0 1 1₂ (11₁₀)
+       + 0 1 1 0₂ (6₁₀)
+       ----------
+       1 0 0 0 1₂ (17₁₀)
+                    </pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ПРАКТИЧЕСКИЕ ЗАДАНИЯ -->
+        <div class="content-section">
+            <h2 class="section-title">🎯 ПРАКТИЧЕСКИЕ ЗАДАНИЯ</h2>
+            
+            <div class="operations-grid">
+                <div class="calculation-box">
+                    <div class="calculation-title">ЗАДАНИЕ 1: 1101₂ + 1011₂ = ?</div>
+                    <div class="section-text">
+                        <span class="highlight">Совет:</span> Следите за переносами
+                    </div>
+                    <div style="color: #00ff00; margin-top: 15px; text-align: center;">
+                        Ответ: 11000₂ (24₁₀)
+                    </div>
+                </div>
+                
+                <div class="calculation-box">
+                    <div class="calculation-title">ЗАДАНИЕ 2: 1111₂ - 1001₂ = ?</div>
+                    <div class="section-text">
+                        <span class="highlight">Совет:</span> Помните о заёмах
+                    </div>
+                    <div style="color: #00ff00; margin-top: 15px; text-align: center;">
+                        Ответ: 0110₂ (6₁₀)
+                    </div>
+                </div>
+                
+                <div class="calculation-box">
+                    <div class="calculation-title">ЗАДАНИЕ 3: 101₂ × 110₂ = ?</div>
+                    <div class="section-text">
+                        <span class="highlight">Совет:</span> Умножение через сложение
+                    </div>
+                    <div style="color: #00ff00; margin-top: 15px; text-align: center;">
+                        Ответ: 11110₂ (30₁₀)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ПРИМЕНЕНИЕ -->
+        <div class="content-section">
+            <h2 class="section-title">💻 ПРИМЕНЕНИЕ В КОМПЬЮТЕРАХ</h2>
+            
+            <div class="section-text">
+                Двоичная арифметика лежит в основе работы процессоров:
+            </div>
+            
+            <div class="operations-grid">
+                <div class="operation-card">
+                    <div class="operation-title">АРИФМЕТИКО-ЛОГИЧЕСКОЕ УСТРОЙСТВО (АЛУ)</div>
+                    <div class="section-text">
+                        Выполняет все арифметические операции<br>
+                        Работает только с двоичными числами<br>
+                        Использует схемы сложения и вычитания
+                    </div>
+                </div>
+                
+                <div class="operation-card">
+                    <div class="operation-title">ДВОИЧНЫЕ СУММАТОРЫ</div>
+                    <div class="section-text">
+                        Полусумматор: складывает 2 бита<br>
+                        Полный сумматор: складывает 3 бита (2 числа + перенос)<br>
+                        Каскад сумматоров для многоразрядных чисел
+                    </div>
+                </div>
+                
+                <div class="operation-card">
+                    <div class="operation-title">ДОПОЛНИТЕЛЬНЫЙ КОД</div>
+                    <div class="section-text">
+                        Способ представления отрицательных чисел<br>
+                        Упрощает вычитание (через сложение)<br>
+                        Используется во всех современных компьютерах
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- НАВИГАЦИЯ -->
+        <div class="nav-buttons">
+            <a href="5.html" class="nav-btn">
+                << НАЗАД: ПЕРЕВОД
+            </a>
+            <a href="8.html" class="nav-btn">
+                ДАЛЕЕ: ИСТОРИЯ >>
+            </a>
+        </div>
+    </main>
+    
+  </html>

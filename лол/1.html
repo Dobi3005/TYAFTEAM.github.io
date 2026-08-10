@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Что такое система счисления? | Мир нулей и единиц</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #000000;
+            color: #00ff00;
+            overflow-x: hidden;
+        }
+        
+        /* БОКОВОЕ МЕНЮ */
+        .sidebar {
+            width: 280px;
+            background-color: #000000;
+            color: #00ff00;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #00ff00;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid #00ff00;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            color: #00ff00;
+            margin-top: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .binary-text {
+            font-size: 14px;
+            color: #00aa00;
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+        
+        /* МЕНЮ */
+        .menu {
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+        
+        .menu-link {
+            display: block;
+            padding: 12px 20px;
+            color: #00ff00;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            font-size: 16px;
+            margin: 5px 10px;
+            border: 1px solid #003300;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .menu-link:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-left-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .menu-link.active {
+            background: rgba(0, 255, 0, 0.15);
+            border-left-color: #00ff00;
+            color: #00ff00;
+            font-weight: bold;
+            border: 1px solid #00ff00;
+        }
+        
+        .link-code {
+            color: #00aa00;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        /* ОСНОВНОЕ СОДЕРЖИМОЕ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            max-width: calc(100% - 280px);
+            background: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* ЗАГОЛОВОК СТРАНИЦЫ */
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+        
+        .page-title {
+            font-size: 36px;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #00ff00;
+        }
+        
+        .page-subtitle {
+            color: #00aa00;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        /* КОНТЕНТ */
+        .content-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #00ff00;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #003300;
+            padding-bottom: 10px;
+        }
+        
+        .section-text {
+            color: #00aa00;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .highlight {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        /* ПРИМЕРЫ */
+        .example-box {
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00aa00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example-title {
+            color: #00ff00;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        /* БЛОКИ С ИНФОРМАЦИЕЙ */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00aa00;
+            padding: 25px;
+            border-radius: 5px;
+        }
+        
+        .info-card h3 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .info-card p {
+            color: #00aa00;
+            line-height: 1.6;
+        }
+        
+        /* КНОПКА НАЗАД */
+        .back-btn {
+            display: inline-block;
+            background: transparent;
+            color: #00ff00;
+            padding: 10px 20px;
+            border: 1px solid #00ff00;
+            text-decoration: none;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        /* МИГАНИЕ */
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: 2px solid #00ff00;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ТИПА БОКОВОЕ МЕНЮ -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div style="font-size: 40px; margin-bottom: 20px; color: #00ff00; text-align: center;">
+                1010<span class="blink">_</span>
+            </div>
+            <h1>СИСТЕМЫ СЧИСЛЕНИЯ</h1>
+            <div class="binary-text">01010111 01001000 01000001 01010100 01100001 01001110</div>
+            <div style="color: #00aa00; font-size: 14px; margin-top: 10px;">МОДУЛЬ: ОСНОВЫ</div>
+        </div>
+        
+        <nav class="menu">
+            <a href='10.html' class="menu-link">
+                <span class="link-code">>></span> ГЛАВНАЯ
+            </a>
+            
+            <a href='1.html' class="menu-link active">
+                <span class="link-code">>></span> ЧТО ТАКОЕ СС
+            </a>
+            
+            <a href='2.html' class="menu-link">
+                <span class="link-code">>></span> ДВОИЧНАЯ СИСТЕМА
+            </a>
+            
+            <a href='3.html' class="menu-link">
+                <span class="link-code">>></span> 8-НАЯ И 16-НАЯ
+            </a>
+            
+            <a href='4.html' class="menu-link">
+                <span class="link-code">>></span> ДРУГИЕ СИСТЕМЫ
+            </a>
+            
+            <a href='5.html' class="menu-link">
+                <span class="link-code">>></span> ПЕРЕВОД
+            </a>
+            
+            <a href='6.html' class="menu-link">
+                <span class="link-code">>></span> АРИФМЕТИКА
+            </a>
+            
+            <a href='8.html' class="menu-link">
+                <span class="link-code">>></span> ИСТОРИЯ
+            </a>
+            
+            <a href='9.html' class="menu-link">
+                <span class="link-code">>></span> ПРАКТИКА
+            </a>
+        </nav>
+        
+        
+            
+            <div style="color: #00aa00; font-size: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #003300;">
+                <div style="color: #00aa00;">.     CURRENT_MODULE: BASICS</div>
+                <div style="color: #003300;">.     NEXT: BINARY_SYSTEM</div>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- ОСНОВНОЕ СОДЕРЖИМОЕ -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">
+                >_ ОСНОВЫ: ЧТО ТАКОЕ СИСТЕМА СЧИСЛЕНИЯ?
+            </h1>
+            <p class="page-subtitle">
+                [МОДУЛЬ 1] | АНАЛИЗ БАЗОВЫХ КОНЦЕПЦИЙ | ДЕКОДИРОВКА ПОНЯТИЙ
+            </p>
+        </header>
+        
+        <!-- ОСНОВНОЕ ОПРЕДЕЛЕНИЕ -->
+        <div class="content-section">
+            <h2 class="section-title">❓ ОПРЕДЕЛЕНИЕ</h2>
+            <p class="section-text">
+                <span class="highlight">Система счисления</span> — это способ записи чисел 
+                с помощью специальных символов (цифр).
+            </p>
+            
+            <div class="example-box">
+                <div class="example-title">ПРОСТОЙ ПРИМЕР:</div>
+                <p style="color: #00aa00; font-size: 20px; margin: 10px 0;">
+                    123 = <span class="highlight">1 сотня</span> + <span class="highlight">2 десятка</span> + <span class="highlight">3 единицы</span>
+                </p>
+                <p style="color: #00aa00;">
+                    Это десятичная система — та, которой мы пользуемся каждый день.
+                </p>
+            </div>
+        </div>
+        
+        <!-- КЛЮЧЕВЫЕ ПОНЯТИЯ -->
+        <div class="content-section">
+            <h2 class="section-title">🔑 КЛЮЧЕВЫЕ ПОНЯТИЯ</h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>ОСНОВАНИЕ</h3>
+                    <p>Количество цифр в системе.</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        Десятичная: основание 10 (0-9)<br>
+                        Двоичная: основание 2 (0,1)<br>
+                        Шестнадцатеричная: основание 16 (0-9, A-F)
+                    </p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>АЛФАВИТ</h3>
+                    <p>Набор используемых цифр.</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        Например:<br>
+                        • Десятичная: 0,1,2,3,4,5,6,7,8,9<br>
+                        • Двоичная: 0,1<br>
+                        • Римская: I,V,X,L,C,D,M
+                    </p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>ПОЗИЦИОННОСТЬ</h3>
+                    <p>Значение цифры зависит от её позиции.</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        555 = 500 + 50 + 5<br>
+                        Первая 5 ≠ второй 5 ≠ третьей 5
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ВИДЫ СИСТЕМ -->
+        <div class="content-section">
+            <h2 class="section-title">📊 ВИДЫ СИСТЕМ СЧИСЛЕНИЯ</h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>ПОЗИЦИОННЫЕ</h3>
+                    <p>Значение цифры зависит от позиции.</p>
+                    <p style="color: #00aa00; margin-top: 10px;">
+                        • Десятичная (10)<br>
+                        • Двоичная (2)<br>
+                        • Восьмеричная (8)<br>
+                        • Шестнадцатеричная (16)
+                    </p>
+                    <p style="color: #00ff00; font-size: 14px; margin-top: 10px;">
+                        >> Используются в математике и информатике
+                    </p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>НЕПОЗИЦИОННЫЕ</h3>
+                    <p>Значение цифры не зависит от позиции.</p>
+                    <p style="color: #00aa00; margin-top: 10px;">
+                        • Римская система<br>
+                        • Египетские иероглифы<br>
+                        • Древнегреческая
+                    </p>
+                    <p style="color: #00ff00; font-size: 14px; margin-top: 10px;">
+                        >> Использовались в древности
+                    </p>
+                </div>
+            </div>
+            
+            <div class="example-box" style="margin-top: 20px;">
+                <div class="example-title">СРАВНЕНИЕ:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="color: #00ff00; margin-bottom: 10px;">ПОЗИЦИОННАЯ (десятичная)</h4>
+                        <p style="color: #00aa00;">
+                            555 = 5×100 + 5×10 + 5×1<br>
+                            Каждая цифра имеет разный вес
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #00ff00; margin-bottom: 10px;">НЕПОЗИЦИОННАЯ (римская)</h4>
+                        <p style="color: #00aa00;">
+                            V всегда = 5<br>
+                            X всегда = 10<br>
+                            Позиция не важна
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ПРИМЕРЫ ИЗ ЖИЗНИ -->
+        <div class="content-section">
+            <h2 class="section-title">💡 ПРИМЕРЫ ИЗ РЕАЛЬНОЙ ЖИЗНИ</h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>ВРЕМЯ</h3>
+                    <p>60-ричная система:</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        1 час = 60 минут<br>
+                        1 минута = 60 секунд<br>
+                        Основание: 60
+                    </p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>КОМПЬЮТЕРЫ</h3>
+                    <p>Двоичная система:</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        Вся информация в компьютере<br>
+                        хранится как 0 и 1<br>
+                        Основание: 2
+                    </p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>ЦВЕТА В ИНТЕРНЕТЕ</h3>
+                    <p>Шестнадцатеричная система:</p>
+                    <p style="color: #00ff00; margin-top: 10px;">
+                        Цвет #FF5733<br>
+                        FF = красный (255)<br>
+                        57 = зеленый (87)<br>
+                        33 = синий (51)
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ПРАКТИЧЕСКОЕ ЗАДАНИЕ -->
+        <div class="content-section">
+            <h2 class="section-title">🎯 ПРОВЕРЬТЕ ПОНИМАНИЕ</h2>
+            
+            <div class="example-box">
+                <div class="example-title">ЗАДАНИЕ:</div>
+                <p style="color: #00aa00; margin-bottom: 15px;">
+                    Определите, какие из этих систем являются позиционными:
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(0, 255, 0, 0.05); padding: 15px; border: 1px solid #003300;">
+                        <div style="color: #00ff00; margin-bottom: 5px;">1. Десятичная</div>
+                        <div style="color: #00aa00; font-size: 14px;">0,1,2,3,4,5,6,7,8,9</div>
+                    </div>
+                    <div style="background: rgba(0, 255, 0, 0.05); padding: 15px; border: 1px solid #003300;">
+                        <div style="color: #00ff00; margin-bottom: 5px;">2. Двоичная</div>
+                        <div style="color: #00aa00; font-size: 14px;">0,1</div>
+                    </div>
+                    <div style="background: rgba(0, 255, 0, 0.05); padding: 15px; border: 1px solid #003300;">
+                        <div style="color: #00ff00; margin-bottom: 5px;">3. Римская</div>
+                        <div style="color: #00aa00; font-size: 14px;">I,V,X,L,C,D,M</div>
+                    </div>
+                    <div style="background: rgba(0, 255, 0, 0.05); padding: 15px; border: 1px solid #003300;">
+                        <div style="color: #00ff00; margin-bottom: 5px;">4. Восьмеричная</div>
+                        <div style="color: #00aa00; font-size: 14px;">0,1,2,3,4,5,6,7</div>
+                    </div>
+                </div>
+                
+                <p style="color: #00aa00;">
+                    <span class="highlight">Ответ:</span> Позиционные — 1, 2, 4. Римская — непозиционная.
+                </p>
+            </div>
+        </div>
+        
+        <!-- НАВИГАЦИЯ -->
+        <div style="display: flex; justify-content: space-between; margin-top: 50px; padding-top: 20px; border-top: 1px solid #003300;">
+            <a href="10.html" class="back-btn">
+                << НАЗАД К ГЛАВНОЙ
+            </a>
+            <a href="2.html" class="back-btn">
+                ДАЛЕЕ: ДВОИЧНАЯ СИСТЕМА >>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
